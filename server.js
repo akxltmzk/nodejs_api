@@ -29,6 +29,7 @@ app.use(express.json())
 // mount router
 app.use('/api/v1/bootcamps',bootcamps)
 
+// npm run dev
 const server = app.listen(PORT, console.log(`server running on ${process.env.NODE_ENV} 
                           mode on port ${PORT} `.yellow.bold))
 

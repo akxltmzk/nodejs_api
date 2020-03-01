@@ -3,15 +3,32 @@ const Bootcamp = require('../models/Bootcamp')
 // @desc   Get all bootcamps
 // @route  GET /api/vi/bootcamps
 // @acess  public(you dont need any token or auth something link that) 
-exports.getBootcamps = (req,res,next)=>{
-  res.status(200).json({succes : true, msg : 'show all bootcamps'})
+exports.getBootcamps = async (req,res,next)=>{
+
+  try{
+    const bootcamps = await Bootcamp.find()
+    res.status(200).json({succes:true, data:bootcamps})
+  }
+  catch(err){
+    res.status(400).json({succes:false})
+  }
 }
 
 // @desc   Get single bootcamps
 // @route  GET /api/vi/bootcamps/:id
 // @acess  public
-exports.getBootcamp = (req,res,next)=>{
-  res.status(200).json({succes : true, msg : `show bootcamp ${req.params.id}`})
+exports.getBootcamp = async(req,res,next)=>{
+  try{
+    const bootcamp = await Bootcamp.findById(req.params.id)
+    if(!bootcamp){
+      res.status(400).json({succes:false})     
+    }
+    res.status(200).json({succes : true, data : bootcamp})
+  }
+  catch(err)
+  {
+    res.status(400).json({succes:false})
+  }
 }
 
 // @desc   Create new bootcamp
