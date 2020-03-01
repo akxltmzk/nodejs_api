@@ -1,3 +1,5 @@
+const Bootcamp = require('../models/Bootcamp')
+
 // @desc   Get all bootcamps
 // @route  GET /api/vi/bootcamps
 // @acess  public(you dont need any token or auth something link that) 
@@ -15,8 +17,17 @@ exports.getBootcamp = (req,res,next)=>{
 // @desc   Create new bootcamp
 // @route  POST /api/vi/bootcamps
 // @acess  private
-exports.createBootcamp = (req,res,next)=>{
-  res.status(200).json({succes : true, msg : 'Create new bootcamp'})
+exports.createBootcamp = async(req,res,next)=>{
+  try{
+    const bootcamp = await Bootcamp.create(req.body)
+    res.status(201).json({
+      succes:true,
+      data : bootcamp
+    })
+  }
+  catch(err){
+    res.status(400).json({succes:false})
+  }
 }
 
 // @desc   Update bootcamp

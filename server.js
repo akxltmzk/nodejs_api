@@ -23,6 +23,8 @@ if(process.env.NODE_ENV === 'development'){
 }
 */
 
+// body parser
+app.use(express.json())
 
 // mount router
 app.use('/api/v1/bootcamps',bootcamps)
