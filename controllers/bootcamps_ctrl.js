@@ -1,4 +1,4 @@
-const Bootcamp = require('../models/Bootcamp')
+const Bootcamp = require('../models/Bootcamp_model')
 
 // @desc   Get all bootcamps
 // @route  GET /api/vi/bootcamps
@@ -50,13 +50,35 @@ exports.createBootcamp = async(req,res,next)=>{
 // @desc   Update bootcamp
 // @route  PUT /api/vi/bootcampss/:id
 // @acess  private
-exports.updateBootcamp = (req,res,next)=>{
-  res.status(200).json({succes : true, msg : `Update bootcamp ${req.params.id}`})
+exports.updateBootcamp = async (req,res,next)=>{
+  try{
+    const bootcamp = await Bootcamp.findByIdAndUpdate(req.params.id,req.body,{
+      //원본이 아닌 수정 된 문서를 반환합니다. 기본값은 false
+      new: true,
+      //true 인 경우이 명령에서 업데이트 유효성 검사기를 실행합니다. 업데이트 유효성 검사기는 모델 스키마에 대해 업데이트 작업의 유효성을 검사
+      runValidators: true
+    })
+    if(!bootcamp)
+      return res,status(400).json({succes:false})
+
+    res.status(200).json({succes:true,data:bootcamp})
+  } catch(err){
+    res.status(400).json({succes:false})
+  }
+
 }
 
 // @desc   Delete bootcamp
 // @route  DELETE /api/vi/bootcampss/:id
 // @acess  private
-exports.deleteBootcamp = (req,res,next)=>{
-  res.status(200).json({succes : true, msg : `Delete bootcamp ${req.params.id}`})
+exports.deleteBootcamp = async (req,res,next)=>{
+  try{
+    const bootcamp = await Bootcamp.findByIdAndDelete(req.params.id)
+    if(!bootcamp)
+      return res,status(400).json({succes:false})
+
+    res.status(200).json({succes:true, data: {}})
+  } catch(err){
+    res.status(400).json({succes:false})
+  }
 }
