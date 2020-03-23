@@ -1,5 +1,6 @@
 const ErrorResponse = require('../utils/errorResponse')
 const Bootcamp = require('../models/Bootcamp_model')
+const geocoder = require('../utils/geocoder')
 const asyncHandler = require('../middleware/async')
 
 // @desc   Get all bootcamps
@@ -61,4 +62,38 @@ exports.deleteBootcamp = asyncHandler(async (req,res,next)=>{
     next(err)
   
   res.status(200).json({succes:true, data: {}})
+})
+
+// @desc   Get bootcamps whitin a radius
+// @route  GET /api/vi/bootcampss/radius/:zipcode/:distance
+// @acess  private
+/*
+  기준이 되는 zipcode를 params로 받아서(유저가 원하는 기준) 원하는 거리(distancec)내의 데이터를
+  DB안에서 찾는 펑션
+
+  ex){{URL}}/api/v1/bootcamps/radius/02118/100
+  -> 02118인 zipcode에서 location이 100마일 이내인 db데이터를 찾아라!!
+ */
+exports.getBootcampsInRadius = asyncHandler(async (req,res,next)=>{
+  const { zipcode, distance} = req.params
+
+  // get lat/lng from geocoder
+  const loc = await geocoder.geocode(zipcode)
+  const lat = loc[0].latitude
+  const lng = loc[0].longitude
+
+  // calc radius using radians
+  // divide distance by radius of Earth
+  // Earth Radius = 3,963 mi / 6,378 km
+  const radius = distance / 3963
+
+  const bootcamps = await Bootcamp.find({
+    location : { $geoWithin: {$centerSphere:[[lng, lat],radius]}}
+  })
+
+  res.status(200).json({
+    succes:true,
+    count: bootcamps.length,
+    data: bootcamps
+  })
 })
