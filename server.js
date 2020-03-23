@@ -1,15 +1,16 @@
 //npm run dev
 
-const express = require('express')
+
 const dotenv = require('dotenv')
+dotenv.config({path: './config/config.env'})
+const express = require('express')
 const morgan = require('morgan')
 const colors = require('colors')
 const errorHandler = require('./middleware/error')
 const bootcamps = require('./routes/bootcamps')
 const connectDB = require('./config/db')
 
-// load env var
-dotenv.config({path: './config/config.env'})
+
 
 // connect db
 connectDB()

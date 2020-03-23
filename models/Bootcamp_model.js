@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const slugify = require('slugify')
+const geocoder = require('../utils/geocoder')
 
 const BootCampSchema = new mongoose.Schema({
   name : {
@@ -126,6 +127,25 @@ BootCampSchema.pre('save',function(){
   next()
 })
 
+// geocode & create location field
+// geomapp 미들웨어. 자동으로 create 할때 location 부분을 채워준다.
+BootCampSchema.pre('save',async function(next){
+  const loc = await geocoder.geocode(this.address)
+  this.location = {
+    type: 'Point',
+    coordinates: [loc[0].longitude, loc[0].latitude],
+    formattedAddress: loc[0].formattedAddress,
+    street: loc[0].streetName,
+    city: loc[0].city,
+    state: loc[0].stateCode,
+    zipcode: loc[0].zipcode,
+    country: loc[0].countryCode
+  }
 
+  // dont save address in db
+  this.address = undefined
+
+  next()
+})
 
 module.exports = mongoose.model('Bootcamp',BootCampSchema)
