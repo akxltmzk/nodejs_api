@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const slugify = require('slugify')
 
 const BootCampSchema = new mongoose.Schema({
   name : {
@@ -113,5 +114,18 @@ const BootCampSchema = new mongoose.Schema({
     default: Date.now
   }
 })
+
+/*
+  pre - 데이터 생성전에,
+  post - 데이터 생성 후에,
+  slugify - 자동으로 불리는 미들웨어
+ */
+BootCampSchema.pre('save',function(){
+  // create되는 db의 name을 !소문자로해서! slug를 채운뒤 db를 create한다.
+  this.slug = slugify(this.name, {lower:true})
+  next()
+})
+
+
 
 module.exports = mongoose.model('Bootcamp',BootCampSchema)
