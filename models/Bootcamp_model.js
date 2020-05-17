@@ -1,5 +1,13 @@
 const mongoose = require('mongoose')
+
+/*
+슬러그(Slug)란 원래 신문이나 잡지 등에서 제목을 쓸 때, 
+중요한 의미를 포함하는 단어만을 이용해 제목을 작성하는 방법을 말합니다. 
+조사나 전치사 등을 빼고
+핵심 의미를 담고 있는 단어를 조합해서 긴 제목을 간단 명료하게 표현하는 것
+*/
 const slugify = require('slugify')
+
 const geocoder = require('../utils/geocoder')
 
 const BootCampSchema = new mongoose.Schema({
@@ -121,6 +129,7 @@ const BootCampSchema = new mongoose.Schema({
   post - 데이터 생성 후에,
   slugify - 자동으로 불리는 미들웨어
  */
+// Create bootcamp slug from the name
 BootCampSchema.pre('save',function(){
   // create되는 db의 name을 !소문자로해서! slug를 채운뒤 db를 create한다.
   this.slug = slugify(this.name, {lower:true})

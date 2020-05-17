@@ -13,6 +13,7 @@ const errorHandler = (err,req,res,next) =>{
     error = new ErrorResponse(message,404)
   }
 
+  // create 할때 포스트맨의 body부분이 같은값일때 생기는 에러
   // db에 같은 값을 또 !create!할때 생기는 에러
   if(err.code === 11000)
   {
@@ -23,7 +24,10 @@ const errorHandler = (err,req,res,next) =>{
   // mongoose validation err(스키마의 해당값(required)을 다 채우지 않고 !create! 할때 생기는 에러)
   if(err.name === 'ValidationError')
   {
-    const message = Object.values(err.errors).map(val => val.message)
+    // required에 채워지지지 않은 에러의 message만 필요하니깐 errors오브젝트의 모든 벨류를 밉팽해서
+    // 문제 있는 val의 message만 추출한다.
+    const message = Object.values(err.errors).map(val =>  val.message)
+
     error = new ErrorResponse(message,400)
   }
 

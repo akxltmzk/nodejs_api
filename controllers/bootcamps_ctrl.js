@@ -41,6 +41,7 @@ exports.getBootcamp = asyncHandler(async(req,res,next)=>{
   res.status(200).json({succes : true, data : bootcamp})
 })
 
+// create는 포스트맨의 body부분에 필요한 값을 적고 만든다.
 // @desc   Create new bootcamp
 // @route  POST /api/vi/bootcamps
 // @acess  private
@@ -53,7 +54,7 @@ exports.createBootcamp = asyncHandler(async(req,res,next)=>{
   })
 })
 
-// @desc   Update bootcamp
+// @desc   Update bootcamp₩
 // @route  PUT /api/vi/bootcampss/:id
 // @acess  private
 exports.updateBootcamp = asyncHandler(async (req,res,next)=>{
