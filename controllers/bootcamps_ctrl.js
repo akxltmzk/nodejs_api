@@ -7,9 +7,6 @@ const asyncHandler = require('../middleware/async')
 // @route  GET /api/vi/bootcamps
 // @acess  public(you dont need any token or auth something link that) 
 exports.getBootcamps = asyncHandler(async(req,res,next)=>{
-
-  let query
-  let queryStr = JSON.stringify(req.query)
   /*
   http://a.com/패스/?id=1(쿼리)
 
@@ -19,13 +16,32 @@ exports.getBootcamps = asyncHandler(async(req,res,next)=>{
   {{URL}}/api/v1/bootcamps?averageCost[lte]=10000 이렇게 들어왔다고 치면!
   이건 averageCost가 10000보다 작거나 같은것들만 db에서 찾는다.
    */
+
+  let query
+
+  // copy req.query
+  const reqQuery = {...req.query}
+
+  // fields to exclude
+  const removeFields = ['select']
+
+  // loop over removeFields and delte them from reqQuery
+  removeFields.forEach(param => delete reqQuery[param])
+
+  console.log(reqQuery)
   
-  console.log(queryStr)//->{"averageCost":{"lte":"10000"}} 
+  // create query string
+  let queryStr = JSON.stringify(reqQuery)
+
+  // create operators($gt, $gte, etc)
+  console.log(queryStr) //->{"averageCost":{"lte":"10000"}} 
   queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g , match =>`$${match}`) 
   console.log(queryStr) //->{"averageCost":{"$lte":"10000"}}
 
+  // finding resource
   query = Bootcamp.find(JSON.parse(queryStr))
 
+  // excuting query
   const bootcamps = await query
   res.status(200).json({succes:true,count: bootcamps.length ,data:bootcamps})
 })
