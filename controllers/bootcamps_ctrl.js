@@ -7,9 +7,12 @@ const asyncHandler = require('../middleware/async')
 // @route  GET /api/vi/bootcamps
 // @acess  public(you dont need any token or auth something link that) 
 exports.getBootcamps = asyncHandler(async(req,res,next)=>{
+
   let query
   let queryStr = JSON.stringify(req.query)
   /*
+  http://a.com/패스/?id=1(쿼리)
+
   @ query 빌더 @
   https://www.zerocho.com/category/MongoDB/post/59bd148b1474c800194b695a
 
@@ -17,10 +20,8 @@ exports.getBootcamps = asyncHandler(async(req,res,next)=>{
   이건 averageCost가 10000보다 작거나 같은것들만 db에서 찾는다.
    */
   
-  console.log(queryStr)//->{"averageCost":{"lte":"10000"}}
-  
+  console.log(queryStr)//->{"averageCost":{"lte":"10000"}} 
   queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g , match =>`$${match}`) 
-  
   console.log(queryStr) //->{"averageCost":{"$lte":"10000"}}
 
   query = Bootcamp.find(JSON.parse(queryStr))
@@ -91,9 +92,12 @@ exports.getBootcampsInRadius = asyncHandler(async (req,res,next)=>{
   기준이 되는 zipcode를 params로 받아서(유저가 원하는 기준) 원하는 거리(distancec)내의 데이터를
   DB안에서 찾는 펑션
 
+  bootcamp.js에서 보면 .route('/radius/:zipcode/:distance') 되있어서 params에 이름을 명시할 수 있다.
+
   ex){{URL}}/api/v1/bootcamps/radius/02118/100
   -> 02118인 zipcode에서 location이 100마일 이내인 db데이터를 찾아라!!
  */
+
   const { zipcode, distance} = req.params
 
   // get lat/lng from geocoder

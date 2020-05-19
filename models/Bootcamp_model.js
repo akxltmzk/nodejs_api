@@ -140,6 +140,7 @@ BootCampSchema.pre('save',function(){
 // geomapp 미들웨어. 자동으로 create 할때 location 부분을 채워준다.
 BootCampSchema.pre('save',async function(next){
   const loc = await geocoder.geocode(this.address)
+  // 스키마의 빈부분인 location 채우기!
   this.location = {
     type: 'Point',
     coordinates: [loc[0].longitude, loc[0].latitude],
@@ -152,6 +153,7 @@ BootCampSchema.pre('save',async function(next){
   }
 
   // dont save address in db
+  // location에 상세한 주소가 기입되니깐, db에 address는 저장하지 않도록한다.
   this.address = undefined
 
   next()
