@@ -7,24 +7,59 @@ const asyncHandler = require('../middleware/async')
 // @route  GET /api/vi/bootcamps
 // @acess  public(you dont need any token or auth something link that) 
 exports.getBootcamps = asyncHandler(async(req,res,next)=>{
-  let query
-  let queryStr = JSON.stringify(req.query)
+
   /*
   @ query 빌더 @
   https://www.zerocho.com/category/MongoDB/post/59bd148b1474c800194b695a
+  */
+
+  let query
+  
+  // copy req.query
+  const reqQuery = {...req.query}
+
+  // fields to exclude
+  const removeFields = ['select','sort']
+
+  // loop over removeFields and delte them from reqQuery
+  removeFields.forEach( param =>delete reqQuery[param])
+
+
+  //create query string
+  let queryStr = JSON.stringify(reqQuery)
+
+
+  /*
+  create operator($gt, $gte, etc...)
 
   {{URL}}/api/v1/bootcamps?averageCost[lte]=10000 이렇게 들어왔다고 치면!
   이건 averageCost가 10000보다 작거나 같은것들만 db에서 찾는다.
-   */
-  
+  */
   console.log(queryStr)//->{"averageCost":{"lte":"10000"}}
-  
   queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g , match =>`$${match}`) 
-  
   console.log(queryStr) //->{"averageCost":{"$lte":"10000"}}
 
+  
+  // finding resources
   query = Bootcamp.find(JSON.parse(queryStr))
 
+  // select fields
+  if(req.query.select){
+    // select를 쓰려면 [name, description]이아니라 name description 형식으로 바꿔야함
+    const fields = req.query.select.split(',').join(' ')
+    query = query.select(fields)    
+  }
+
+  // sort
+  if(req.query.sort){
+    const sortBy = req.query.sort.split(',').join('')
+    query = query.sort(sortBy)
+  }else{
+    //쿼리에 sort가 따로 없으면 createAt을 기준으로 정렬한다
+    query = query.sort('-createdAt')
+  }
+
+  // executing query
   const bootcamps = await query
   res.status(200).json({succes:true,count: bootcamps.length ,data:bootcamps})
 })
