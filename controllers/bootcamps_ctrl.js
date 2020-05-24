@@ -18,8 +18,8 @@ exports.getBootcamps = asyncHandler(async(req,res,next)=>{
   // copy req.query
   const reqQuery = {...req.query}
 
-  // fields to exclude
-  const removeFields = ['select','sort']
+  // fields to exclude(데이터에 select와 sort...등과 같이 없는 값은 query에서 일단 뺀다.)
+  const removeFields = ['select','sort','page','limit']
 
   // loop over removeFields and delte them from reqQuery
   removeFields.forEach( param =>delete reqQuery[param])
@@ -59,9 +59,43 @@ exports.getBootcamps = asyncHandler(async(req,res,next)=>{
     query = query.sort('-createdAt')
   }
 
+  // pagination
+  // parseInt -> 만약 page를 적지 않았을 경우 기본값은 10으로 설정
+  const page = parseInt(req.query.page , 10) || 1
+  const limit = parseInt(req.query.limit , 10) || 25
+  const startIndex = (page - 1)*limit
+  const endIndex = page*limit
+  const total = await Bootcamp.countDocuments()
+
+  // limit->  메소드를 통하여 보이는 출력물의 갯수를 제한
+  // skip-> 출력 할 데이터의 시작부분을 설정할 때 사용
+  query = query.skip(startIndex).limit(limit)
+
   // executing query
   const bootcamps = await query
-  res.status(200).json({succes:true,count: bootcamps.length ,data:bootcamps})
+
+  // pagination result
+  const pagination = {}
+  if(endIndex < total){
+    pagination.next = {
+      page : page + 1 ,
+      limit
+    }
+  }
+
+  if(startIndex > 0){
+    pagination.prev = {
+      page: page-1,
+      limit
+    }
+  }
+
+    
+  res.status(200).json(
+    { succes:true , 
+      count: bootcamps.length , 
+      pagination ,
+      data:bootcamps})
 })
 
 // @desc   Get single bootcamps
