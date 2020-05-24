@@ -1,6 +1,13 @@
 const ErrorResponse = require('../utils/errorResponse')
 
 const errorHandler = (err,req,res,next) =>{
+  /* 
+    <threedot에 대해서>
+    let error = err
+    이렇게 해버리면 error를 바꾸면 err를 참조하기 때문에 err도 바뀐다.
+    let error = { ...err }
+    쓰면 err는 더이상 error과는 연관이 없다.
+  */
   let error = { ...err }
   error.message = err.message
 
