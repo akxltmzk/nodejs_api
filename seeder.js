@@ -13,6 +13,7 @@ dotenv.config({path: './config/config.env'})
 
 // load models
 const bootcamp = require('./models/Bootcamp_model')
+const Course = require('./models/Course_model')
 
 // connect to DB
 mongoose.connect(process.env.MONGO_URI, {
@@ -24,11 +25,13 @@ mongoose.connect(process.env.MONGO_URI, {
 
 // read JSON files
 const bootcamps = JSON.parse(fs.readFileSync(`${__dirname}/_data/bootcamps.json`,'utf-8'))
+const courses = JSON.parse(fs.readFileSync(`${__dirname}/_data/courses.json`,'utf-8'))
 
 // import into DB
 const importData = async () =>{
   try {
     await bootcamp.create(bootcamps)
+    await Course.create(courses)
 
     //console에 칼라주기
     console.log('Data imported..'.green.inverse)
@@ -42,6 +45,7 @@ const importData = async () =>{
 const deleteData = async () =>{
   try {
     await bootcamp.deleteMany()
+    await Course.deleteMany()
     console.log('Data Destroyed..'.red.inverse)
     process.exit()
   } catch (err) {
