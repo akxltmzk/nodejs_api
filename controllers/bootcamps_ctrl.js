@@ -60,7 +60,8 @@ exports.getBootcamps = asyncHandler(async(req,res,next)=>{
   }
 
   // pagination
-  // parseInt -> 만약 page를 적지 않았을 경우 기본값은 10으로 설정
+  // parseInt -> 만약 page를 적지 않았을 경우 기본값은 1으로 설정
+  // pareInt의 두번째 파라미터는 radix -> 진법 , 여기서는 10진법
   const page = parseInt(req.query.page , 10) || 1
   const limit = parseInt(req.query.limit , 10) || 25
   const startIndex = (page - 1)*limit
