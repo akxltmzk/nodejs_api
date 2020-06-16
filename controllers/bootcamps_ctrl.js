@@ -66,6 +66,8 @@ exports.getBootcamps = asyncHandler(async(req,res,next)=>{
   const limit = parseInt(req.query.limit , 10) || 25
   const startIndex = (page - 1)*limit
   const endIndex = page*limit
+
+  // mongoose 기본 펑션, 모든 다큐먼트의 수를 셀 수 있음
   const total = await Bootcamp.countDocuments()
 
   // limit->  메소드를 통하여 보이는 출력물의 갯수를 제한
