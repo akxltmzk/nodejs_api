@@ -13,7 +13,11 @@ exports.getCourses = asyncHandler(async(req, res, next)=>{
   if(req.params.bootcampId){
     query = Course.find({ bootcamp: req.params.bootcampId})
   }else{
-    query = Course.find()
+    query = Course.find().populate({
+      // bootcamp model에서 description만 select
+      path: 'bootcamp',
+      select: 'description'
+    })
   }
 
   const courses = await query
@@ -23,5 +27,4 @@ exports.getCourses = asyncHandler(async(req, res, next)=>{
     count : courses.length,
     data: courses
   })
-
 })

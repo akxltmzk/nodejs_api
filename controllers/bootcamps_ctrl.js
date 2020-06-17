@@ -24,7 +24,6 @@ exports.getBootcamps = asyncHandler(async(req,res,next)=>{
   // loop over removeFields and delte them from reqQuery
   removeFields.forEach( param =>delete reqQuery[param])
 
-
   //create query string
   let queryStr = JSON.stringify(reqQuery)
 
@@ -40,8 +39,8 @@ exports.getBootcamps = asyncHandler(async(req,res,next)=>{
   console.log(queryStr) //->{"averageCost":{"$lte":"10000"}}
 
   
-  // finding resources
-  query = Bootcamp.find(JSON.parse(queryStr))
+  // finding resources(courses의 리소스를 reverse-populate시킴)
+  query = Bootcamp.find(JSON.parse(queryStr)).populate('courses')
 
   // select fields
   if(req.query.select){
@@ -147,10 +146,12 @@ exports.updateBootcamp = asyncHandler(async (req,res,next)=>{
 // @route  DELETE /api/vi/bootcampss/:id
 // @acess  private
 exports.deleteBootcamp = asyncHandler(async (req,res,next)=>{
-  const bootcamp = await Bootcamp.findByIdAndDelete(req.params.id)
+  const bootcamp = await Bootcamp.findById(req.params.id)
 
   if(!bootcamp)
     next(err)
+
+  bootcamp.remove()
   
   res.status(200).json({succes:true, data: {}})
 })

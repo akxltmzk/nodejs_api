@@ -122,13 +122,22 @@ const BootCampSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   }
+}, {
+  // Course에 있는 항목을 reverse-populate하기 위해 
+  toJSON : { virtuals : true},
+  toObject : { virtuals : true }
+
 })
+
+/* ========================= middleware =========================== */
+
 
 /*
   pre - 데이터 생성전에,
   post - 데이터 생성 후에,
   slugify - 자동으로 불리는 미들웨어
- */
+*/
+
 // Create bootcamp slug from the name
 BootCampSchema.pre('save',function(){
   // create되는 db의 name을 !소문자로해서! slug를 채운뒤 db를 create한다.
@@ -157,6 +166,29 @@ BootCampSchema.pre('save',async function(next){
   this.address = undefined
 
   next()
+})
+
+// 미들웨어(bootcamp_ctrl의 deleteBootcamp시 자동 실행된다.)
+// 특정 아이디의 bootcamp를 삭제하면 그 아이디와 관련된 Courese도 자동으로
+// 삭제된다.
+BootCampSchema.pre('remove',async function(next){
+  console.log(`Courses being removed from bootcamp ${this._id}`);
+  // deletemany는 매칭되는 모든 다큐먼트를 삭제
+  await this.model('Courses').deleteMany({bootcamp: this._id})
+  next()
+})
+
+// reverse populate with virtuals
+/*
+The localField and foreignField options.
+Mongoose will populate documents from the model in ref 
+whose foreignField matches this document's localField.
+*/
+BootCampSchema.virtual('courses', {
+  ref : 'Course' ,
+  localField : '_id' ,
+  foreignField : 'bootcamp' ,
+  justOne : false
 })
 
 module.exports = mongoose.model('Bootcamp',BootCampSchema)
