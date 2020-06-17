@@ -92,7 +92,6 @@ exports.getBootcamps = asyncHandler(async(req,res,next)=>{
     }
   }
 
-    
   res.status(200).json(
     { succes:true , 
       count: bootcamps.length , 
