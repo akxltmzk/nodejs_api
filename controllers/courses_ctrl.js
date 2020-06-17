@@ -54,6 +54,11 @@ exports.getCourse = asyncHandler(async(req, res, next)=>{
 // @route  POST /api/v1/bootcamps/:bootcampId/courses
 // @acess  Private
 exports.addCourse = asyncHandler(async(req, res, next)=>{
+  /*(포스트맨)
+  {{URL}}/api/v1/bootcamps/5d713a66ec8f2b88b8f830b8/courses
+  를 Post로 하고
+  body에 데이터를 JSON으로 넣고 add 할수 있다
+  */
   req.body.bootcamp = req.params.bootcampId
 
   const bootCamp = await BootCamp.findById(req.params.bootcampId)
