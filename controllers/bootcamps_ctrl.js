@@ -1,3 +1,4 @@
+const path = require('path')
 const ErrorResponse = require('../utils/errorResponse')
 const Bootcamp = require('../models/Bootcamp_model')
 const geocoder = require('../utils/geocoder')
@@ -187,4 +188,47 @@ exports.getBootcampsInRadius = asyncHandler(async (req,res,next)=>{
     count: bootcamps.length,
     data: bootcamps
   })
+})
+
+// @desc   Upload photo for bootcamp
+// @route  Put /api/vi/bootcampss/:id/photo
+// @acess  private
+exports.bootcampPhotoUpload = asyncHandler(async (req,res,next)=>{
+  const bootcamp = await Bootcamp.findById(req.params.id)
+
+  if(!bootcamp)
+    next(err)
+
+  if(!req.files)
+    next(err)
+
+  const file = req.files.file
+
+  // make sure the image is a photo
+  if(!file.mimetype.startsWith('image'))
+    return next(new ErrorResponse(`Please upload an image file`) , 400)
+  
+  // check filesize
+  if(file.size > process.env.MAX_FILE_UPLOAD){
+    return next(new ErrorResponse(`Please upload an image less than ${process.env.MAX_FILE_UPLOAD}`) , 400)
+  }
+
+  // create custom filename(ext는 jpg, png 등의 확장자들)
+  file.name = `photo_${bootcamp._id}${path.parse(file.name).ext}`
+  
+  file.mv(`${process.env.FILE_UPLOAD_PATH}/${file.name}`,async err => {
+    if(err){
+      console.error(err)
+      return next(new ErrorResponse(`problem with file upload`) , 500)
+    }
+  })
+
+  await Bootcamp.findByIdAndUpdate(req.params.id , {photo : file.name})
+
+  res.status(200).json({
+    succes: true,
+    data:file.name
+  })
+
+
 })

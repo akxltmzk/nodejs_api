@@ -38,11 +38,20 @@ const errorHandler = (err,req,res,next) =>{
     error = new ErrorResponse(message,400)
   }
 
-  // ID가 DB에 없을때 발생되는 에러
+  // ID가 DB에 없을때 발생되는 에러 혹은 사진 파일이 업로드 안되었을때의 오류
   if(err.name ==='ReferenceError'){
+
     let objectID = req.url.toString()
-    objectID = objectID.split('/api/v1/bootcamps/')
-    const message = `해당 ObjectId의 포멧은 맞으나, ${objectID}는 DB에서 찾을 수 없습니다`
+    let message
+
+    if(objectID.includes("photo")){
+      message = '사진 파일을 업로드 해주십시오!'
+    }
+    else{
+      objectID = objectID.split('/api/v1/bootcamps/')
+      message = `해당 ObjectId의 포멧은 맞으나, ${objectID}는 DB에서 찾을 수 없습니다`
+    }
+
     error = new ErrorResponse(message,404) 
   }
 

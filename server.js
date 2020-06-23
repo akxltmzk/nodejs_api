@@ -1,11 +1,12 @@
 //npm run dev
 
-
+const path = require('path')
 const dotenv = require('dotenv')
 dotenv.config({path: './config/config.env'})
 const express = require('express')
 const morgan = require('morgan')
 const colors = require('colors')
+const fileupload = require('express-fileupload')
 const errorHandler = require('./middleware/error')
 
 const bootcamps = require('./routes/bootcamps')
@@ -31,6 +32,13 @@ if(process.env.NODE_ENV === 'development'){
 
 // body parser
 app.use(express.json())
+
+// file uploading
+app.use(fileupload())
+
+// set static folder
+app.use(express.static(path.join(__dirname , 'public')))
+
 
 // mount router
 app.use('/api/v1/bootcamps' , bootcamps)

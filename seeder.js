@@ -31,7 +31,7 @@ const courses = JSON.parse(fs.readFileSync(`${__dirname}/_data/courses.json`,'ut
 const importData = async () =>{
   try {
     await bootcamp.create(bootcamps)
-    // await Course.create(courses)
+    await Course.create(courses)
 
     //console에 칼라주기
     console.log('Data imported..'.green.inverse)
