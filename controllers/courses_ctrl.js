@@ -50,7 +50,7 @@ exports.getCourse = asyncHandler(async(req, res, next)=>{
   })
 })
 
-// @desc   Add
+// @desc   Add Course
 // @route  POST /api/v1/bootcamps/:bootcampId/courses
 // @acess  Private
 exports.addCourse = asyncHandler(async(req, res, next)=>{
@@ -72,5 +72,57 @@ exports.addCourse = asyncHandler(async(req, res, next)=>{
   res.status(200).json({
     success : true,
     data: course
+  })
+})
+
+// @desc   update Course
+// @route  POST /api/v1/:id
+// @acess  Private
+exports.updateCourse = asyncHandler(async(req, res, next)=>{
+
+  /*
+  course중 업데이트하고 싶은 아이디를 GetCourses에서 가져온다음에
+  ex) {{URL}}/api/v1/courses/5d725c84c4ded7bcb480eaa0 아이디로 url 설정후
+  put 으로 설정, body에 업데이트하고 싶은 항목을 JSON으로 던지면 업데이트 된다.
+  ex)
+  {
+    "tuition": 12000,
+    "minimumSkill": "advanced"
+  }
+  
+  */
+  let course = await Course.findById(req.params.id)
+  
+  if(!course)
+    return next(new ErrorResponse(`No courses with the id of ${req.params.id}`) , 404)
+  
+
+  course = await Course.findByIdAndUpdate(req.params.id, req.body,{
+    new : true,
+    runValidators: true
+  })
+
+  res.status(200).json({
+    success : true,
+    data: course
+  })
+})
+
+
+// @desc   delete Course
+// @route  DELETE /api/v1/:id
+// @acess  Private
+exports.deleteCourse = asyncHandler(async(req, res, next)=>{
+
+  const course = await Course.findById(req.params.id)
+  
+  if(!course)
+    return next(new ErrorResponse(`No courses with the id of ${req.params.id}`) , 404)
+  
+  await course.remove()
+
+  res.status(200).json({
+    success : true,
+    data: {}
   })
 })

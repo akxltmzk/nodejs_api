@@ -22,7 +22,7 @@ exports.getBootcamps = asyncHandler(async(req,res,next)=>{
   const removeFields = ['select','sort','page','limit']
 
   // loop over removeFields and delte them from reqQuery
-  removeFields.forEach( param =>delete reqQuery[param])
+  removeFields.forEach( param => delete reqQuery[param])
 
   //create query string
   let queryStr = JSON.stringify(reqQuery)

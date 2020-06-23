@@ -7,7 +7,6 @@ const mongoose = require('mongoose')
 핵심 의미를 담고 있는 단어를 조합해서 긴 제목을 간단 명료하게 표현하는 것
 */
 const slugify = require('slugify')
-
 const geocoder = require('../utils/geocoder')
 
 const BootCampSchema = new mongoose.Schema({
@@ -15,6 +14,7 @@ const BootCampSchema = new mongoose.Schema({
     type: String,
     required:[true,'Please add name'],
     unique: true,
+    // "     hello" -> "hello"로 저장됨
     trim: true,
     maxlength:[50,'Name can not be more than 50 characters']
   },
