@@ -2,7 +2,7 @@ const advancedResults = (model , populate) => async (req, res, next) => {
   /*
     @ query 빌더 @
     https://www.zerocho.com/category/MongoDB/post/59bd148b1474c800194b695a
-    */
+  */
 
   let query
     

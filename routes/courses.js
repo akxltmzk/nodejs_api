@@ -22,7 +22,8 @@ router
     .post(addCourse)
 
 
-router.route('/:id')
+router
+  .route('/:id')
   .get(getCourse)
   .put(updateCourse)
   .delete(deleteCourse)
