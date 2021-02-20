@@ -63,15 +63,18 @@ const advancedResults = (model , populate) => async (req, res, next) => {
   // limit->  메소드를 통하여 보이는 출력물의 갯수를 제한
   // skip-> 출력 할 데이터의 시작부분을 설정할 때 사용
   query = query.skip(startIndex).limit(limit)
-
+  
+  //* -------- 6. populate 할 것 있을때는 해준다 ---------- */
+  
   if(populate){
     query = query.populate(populate)
   }
-  //*----- 5. finally, excuting query and save with 'results' variable ------- */
+  
+  //*----- 7. finally, excuting query and save with 'results' variable ------- */
   
   const results = await query
 
-  /*---------------- 6. for the frontend, make next, prev data---------------- */
+  /*---------------- 8. for the frontend, make next, prev data---------------- */
   
   // pagination result
   const pagination = {}
@@ -89,7 +92,7 @@ const advancedResults = (model , populate) => async (req, res, next) => {
     }
   }
 
-  /*------------------------ 7. save this all results------------------------ */
+  /*------------------------ 9. save this all results------------------------ */
   
   res.advancedResults = {
     success : true,

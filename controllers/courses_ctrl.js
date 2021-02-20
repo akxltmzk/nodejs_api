@@ -8,6 +8,8 @@ const asyncHandler = require('../middleware/async')
 // @route  GET /api/v1/bootcamps/:bootcampId/courses
 // @acess  public
 exports.getCourses = asyncHandler(async(req, res, next)=>{
+  // /api/v1/bootcamps/:bootcampId/courses
+  // 이렇게 특정 부트캠프의 코스를 전체 검색할때
   if(req.params.bootcampId){
     const courses = await Course.find({ bootcamp: req.params.bootcampId})
 
@@ -16,7 +18,10 @@ exports.getCourses = asyncHandler(async(req, res, next)=>{
       count : courses.length,
       data : courses
     })
-  }else{
+  }
+  // 그냥 코스 전체 검색할때
+  else
+  {
     res.status(200).json(res.advancedResults)   
   }
 })

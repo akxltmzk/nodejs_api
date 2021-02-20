@@ -126,7 +126,6 @@ const BootCampSchema = new mongoose.Schema({
   // Course에 있는 항목을 reverse-populate하기 위해 
   toJSON : { virtuals : true},
   toObject : { virtuals : true }
-
 })
 
 /* ========================= middleware =========================== */
@@ -174,16 +173,11 @@ BootCampSchema.pre('save',async function(next){
 BootCampSchema.pre('remove',async function(next){
   console.log(`Courses being removed from bootcamp ${this._id}`);
   // deletemany는 매칭되는 모든 다큐먼트를 삭제
-  await this.model('Courses').deleteMany({bootcamp: this._id})
+  await this.model('Course').deleteMany({bootcamp: this._id})
   next()
 })
 
 // reverse populate with virtuals
-/*
-The localField and foreignField options.
-Mongoose will populate documents from the model in ref 
-whose foreignField matches this document's localField.
-*/
 BootCampSchema.virtual('courses', {
   ref : 'Course' , 
   localField : '_id' ,

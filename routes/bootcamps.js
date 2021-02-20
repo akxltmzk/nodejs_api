@@ -34,7 +34,7 @@ router
 
 router
   .route('/')
-  .get(advancedResults(Bootcamp, ' courses') , getBootcamps)
+  .get(advancedResults(Bootcamp, 'courses') , getBootcamps)
   .post(protect, createBootcamp)
  
 router
