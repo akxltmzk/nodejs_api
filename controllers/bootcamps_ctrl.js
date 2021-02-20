@@ -91,6 +91,7 @@ exports.getBootcampsInRadius = asyncHandler(async (req,res,next)=>{
   const radius = distance / 3963
 
   const bootcamps = await Bootcamp.find({
+    // geocode query operator
     location : { $geoWithin: {$centerSphere:[[lng, lat],radius]}}
   })
 
