@@ -10,8 +10,8 @@ exports.protect = asyncHandler(async(req, res, next)=>{
   {
     /*
     create bootcamp를 할때
-    Headers에 Bearer Bearer +token을 쳐서 보내기 때문에
-    ' '를 걷어내고 [1]을 가져오면 token만 싹 가져온다.
+    Headers에 Bearer +token을 쳐서 보내기 때문에
+    Bearer과 token을 에서 ' '를 나누고 [1]을 가져오면 token만 싹 가져온다.
     */
     token = req.headers.authorization.split(' ')[1]
   }

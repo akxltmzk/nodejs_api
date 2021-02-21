@@ -15,23 +15,7 @@ exports.register = asyncHandler(async(req,res,next)=>{
     password,
     role
   })
-
-  /* 
-    create token(User_model.js에서 methods를 만들었기 때문에 이렇게 사용 가능
-    (개개인의 user기 때문에 static으로는 사용안함!)
-  
-    body에 row로 설정하고 
-    {
-      "name":"John Doe",
-      "email":"john@gmail.com",
-      "password":"123456",
-      "role":"publisher"
-    }
-    과 같은 json과 함께 user를 create하면
-
-    sccess와 함께 token이 발행된다.
-    그 token을 jwt.io 사이트에 입력해서 보면 userid를 출력해준다.
-  */
+  // token 발행
   sendTokenResponse(user, 200, res)
 })
 
@@ -54,12 +38,14 @@ exports.login = asyncHandler(async(req,res,next)=>{
     return next(new ErrorResponse('Please provide an email and password'),400)
   
   // check for user
+  // User_model.js보면 password는 select = false로 금지시켜놨는데 로그인 시에는 필요하다 어떡하지.
+  // +password로 하면된다.
   const user = await User.findOne({email: email}).select('+password')
 
   if(!user)
     return next(new ErrorResponse('Invalid credentials'),401)
 
-  // check if password matches
+  // check if password matches(User_model안에 있는 method)
   const isMatch = await user.matchPassword(password)
   if(!isMatch)
     return next(new ErrorResponse('Invalid credentials'),401)
@@ -69,10 +55,10 @@ exports.login = asyncHandler(async(req,res,next)=>{
 
 // get token form model, create cookie and send response
 const sendTokenResponse = (user, statusCode, res) =>{
-  // create token
+  // create token(User_model에 있는 moethods, 해석하면 UserId가 나오는 토큰)
   const token = user.getSignedJwtToken()
 
-  const options = {
+  const options = { 
     expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRE * 24 * 60 * 60 * 100),
     httpOnly: true
   }

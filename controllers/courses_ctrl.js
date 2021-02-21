@@ -26,7 +26,6 @@ exports.getCourses = asyncHandler(async(req, res, next)=>{
   }
 })
 
-
 // @desc   Get single course
 // @route  GET /api/v1/courses/:id
 // @acess  public
@@ -37,7 +36,7 @@ exports.getCourse = asyncHandler(async(req, res, next)=>{
   })
   
   if(!course)
-    return next(new ErrorResponse(`No courses with the id of ${req.params.id}`) , 400)
+    return next(new ErrorResponse(`No courses with the id of ${req.params.id}`) , 404)
   
 
   res.status(200).json({
@@ -53,7 +52,11 @@ exports.addCourse = asyncHandler(async(req, res, next)=>{
   /*(포스트맨)
   {{URL}}/api/v1/bootcamps/5d713a66ec8f2b88b8f830b8/courses
   를 Post로 하고
-  body에 데이터를 JSON으로 넣고 add 할수 있다
+  body에 데이터를 JSON으로 넣고 add 할수 있다.
+
+  req.params.bootcampId = 5d713a66ec8f2b88b8f830b8 인게
+  bootcamp.js에서 라우팅을 router.use('/:bootcampId/courses', courseRouter) 이렇게 하고 있는데
+  params :bootcampId 이부분을 가르키는것
   */
   req.body.bootcamp = req.params.bootcampId
 
@@ -75,7 +78,6 @@ exports.addCourse = asyncHandler(async(req, res, next)=>{
 // @route  POST /api/v1/:id
 // @acess  Private
 exports.updateCourse = asyncHandler(async(req, res, next)=>{
-
   /*
   course중 업데이트하고 싶은 아이디를 GetCourses에서 가져온다음에
   ex) {{URL}}/api/v1/courses/5d725c84c4ded7bcb480eaa0 아이디로 url 설정후
@@ -85,7 +87,6 @@ exports.updateCourse = asyncHandler(async(req, res, next)=>{
     "tuition": 12000,
     "minimumSkill": "advanced"
   }
-  
   */
   let course = await Course.findById(req.params.id)
   
@@ -115,6 +116,9 @@ exports.deleteCourse = asyncHandler(async(req, res, next)=>{
   if(!course)
     return next(new ErrorResponse(`No courses with the id of ${req.params.id}`) , 404)
   
+  // delete 할때 findByIdAndDelete를 안하는 이유는, 미들웨어로 처리할것이기 때문이다.
+  // course를 하나 지우면 bootcamp의 averagecost가 달라지기 때문에 이것을 Course_model.js
+  // 에서 미들웨어로 처리한다
   await course.remove()
 
   res.status(200).json({

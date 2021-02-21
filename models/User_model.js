@@ -7,7 +7,6 @@ const UserSchema = new mongoose.Schema({
     type : String,
     required : [true, 'Please add a name']
   },
-
   email:{
     type: String,
     required : [true,'please add a email'],
@@ -26,6 +25,7 @@ const UserSchema = new mongoose.Schema({
     type : String,
     required : [true, 'please add a password'],
     minlength : 6,
+    // querybuilder select false(비번이닝께)
     select : false
   },
   resetPasswordToken : String,
@@ -43,7 +43,7 @@ UserSchema.pre('save',async function(next){
   this.password = await bcrypt.hash(this.password , salt)
 })
 
-// sign JWT and return(token 발행 코드)
+// User id를 갖고있는 토큰발행
 // https://jwt.io/
 UserSchema.methods.getSignedJwtToken = function(){
   return jwt.sign(

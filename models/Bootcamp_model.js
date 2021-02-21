@@ -132,9 +132,10 @@ const BootCampSchema = new mongoose.Schema({
 
 
 /*
-  pre - 데이터 생성전에,
-  post - 데이터 생성 후에,
-  slugify - 자동으로 불리는 미들웨어
+  <mongoose middleware>
+  1. pre - 데이터 생성전에,
+  2. post - 데이터 생성 후에,
+  3. slugify - 자동으로 불리는 미들웨어
 */
 
 // Create bootcamp slug from the name

@@ -18,6 +18,7 @@ const {
 router
     .route('/')
     .get(advancedResults(Course, {
+      // populate할때 이렇게 객체를 던질 수 있다.
       path : 'bootcamp',
       select: 'name description'
     }),getCourses)
