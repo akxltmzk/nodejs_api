@@ -17,7 +17,7 @@ const advancedResults = require('../middleware/advancedResults')
 // include other resources routers
 const courseRouter = require('./courses')
 
-const { protect } = require('../middleware/auth_middleware')
+const { protect, authorize } = require('../middleware/auth_middleware')
 
 // re-route into other resource routers
 // {{URL}}/api/v1/bootcamps/5d713a66ec8f2b88b8f830b8/courses 이런 request가 들어오면  v1/bootcamp 여기에서 라우터를 받아야 하는데,
@@ -30,17 +30,17 @@ router
 
 router
   .route('/:id/photo')
-  .put(protect , bootcampPhotoUpload)
+  .put(protect, authorize('publisher','admin') , bootcampPhotoUpload)
 
 router
   .route('/')
   .get(advancedResults(Bootcamp, 'courses') , getBootcamps)
-  .post(protect, createBootcamp)
+  .post(protect, authorize('publisher','admin') , createBootcamp)
  
 router
   .route('/:id')
   .get(getBootcamp)
-  .put(protect, updateBootcamp)
-  .delete(protect, deleteBootcamp)
+  .put(protect,authorize('publisher','admin') , updateBootcamp)
+  .delete(protect, authorize('publisher','admin') ,deleteBootcamp)
 
 module.exports = router

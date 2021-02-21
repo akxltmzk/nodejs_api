@@ -6,7 +6,7 @@ const advancedResults = require('../middleware/advancedResults')
   bootcamps.js에 라우팅 됬다가, 거기서 여기로 re-route시켜야하니깐 mergeParams:true를 한다.
 */
 const router = express.Router({mergeParams: true})
-const { protect } = require('../middleware/auth_middleware')
+const { protect,authorize } = require('../middleware/auth_middleware')
 const { 
   getCourses,
   getCourse ,
@@ -28,7 +28,7 @@ router
 router
   .route('/:id')
   .get(getCourse)
-  .put(protect,updateCourse)
-  .delete(protect,deleteCourse)
+  .put(protect,authorize('publisher','admin') ,updateCourse)
+  .delete(protect,authorize('publisher','admin') ,deleteCourse)
 
 module.exports = router
