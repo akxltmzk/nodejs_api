@@ -122,7 +122,7 @@ const BootCampSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   }
-}, {
+  }, {
   // Course에 있는 항목을 reverse-populate하기 위해 
   toJSON : { virtuals : true},
   toObject : { virtuals : true }

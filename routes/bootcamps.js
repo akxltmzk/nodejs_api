@@ -12,12 +12,26 @@ const {
   } = require('../controllers/bootcamps_ctrl')
 
 const Bootcamp = require('../models/Bootcamp_model')
-const advancedResults = require('../middleware/advancedResults')
+
 
 // include other resources routers
 const courseRouter = require('./courses')
 
+// include middleware
+const advancedResults = require('../middleware/advancedResults')
 const { protect, authorize } = require('../middleware/auth_middleware')
+
+router
+  .route('/')
+  .get(advancedResults(Bootcamp, 'courses') , getBootcamps)
+  .post(protect , authorize('publisher','admin') , createBootcamp)
+ 
+router
+  .route('/:id')
+  .get(getBootcamp)
+  .put(protect , authorize('publisher','admin') , updateBootcamp)
+  .delete(protect, authorize('publisher','admin') ,deleteBootcamp)
+
 
 // re-route into other resource routers
 // {{URL}}/api/v1/bootcamps/5d713a66ec8f2b88b8f830b8/courses 이런 request가 들어오면  v1/bootcamp 여기에서 라우터를 받아야 하는데,
@@ -30,17 +44,7 @@ router
 
 router
   .route('/:id/photo')
-  .put(protect, authorize('publisher','admin') , bootcampPhotoUpload)
+  .put(protect , authorize('publisher','admin') , bootcampPhotoUpload)
 
-router
-  .route('/')
-  .get(advancedResults(Bootcamp, 'courses') , getBootcamps)
-  .post(protect, authorize('publisher','admin') , createBootcamp)
- 
-router
-  .route('/:id')
-  .get(getBootcamp)
-  .put(protect,authorize('publisher','admin') , updateBootcamp)
-  .delete(protect, authorize('publisher','admin') ,deleteBootcamp)
 
 module.exports = router
