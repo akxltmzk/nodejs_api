@@ -12,7 +12,6 @@ exports.getCourses = asyncHandler(async(req, res, next)=>{
   // 이렇게 특정 부트캠프의 코스를 전체 검색할때
   if(req.params.bootcampId){
     const courses = await Course.find({ bootcamp: req.params.bootcampId})
-
     return res.status(200).json({
       success : true,
       count : courses.length,
@@ -32,7 +31,7 @@ exports.getCourses = asyncHandler(async(req, res, next)=>{
 exports.getCourse = asyncHandler(async(req, res, next)=>{
   const course = await Course.findById(req.params.id).populate({
     path : 'bootcamp',
-    select: 'name description'
+    select: 'name website'
   })
   
   if(!course)
@@ -67,7 +66,6 @@ exports.addCourse = asyncHandler(async(req, res, next)=>{
   
   const course = await Course.create(req.body)
   
-
   res.status(200).json({
     success : true,
     data: course

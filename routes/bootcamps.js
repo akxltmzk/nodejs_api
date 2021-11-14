@@ -46,5 +46,4 @@ router
   .route('/:id/photo')
   .put(protect , authorize('publisher','admin') , bootcampPhotoUpload)
 
-
 module.exports = router

@@ -50,16 +50,30 @@ exports.login = asyncHandler(async(req,res,next)=>{
   if(!isMatch)
     return next(new ErrorResponse('Invalid credentials'),401)
 
-    sendTokenResponse(user, 200, res)
+  sendTokenResponse(user, 200, res)
+})
+
+// @desc   get current logged in user
+// @route  Post /api/vi/auth/me
+// @acess  private
+exports.getMe = asyncHandler(async(req, res, next)=>{
+  const user = await User.findById(req.user.id)
+
+  res.status(200).json({
+    success:true,
+    data: user
+  })
+
 })
 
 // get token form model, create cookie and send response
 const sendTokenResponse = (user, statusCode, res) =>{
+
   // create token(User_model에 있는 moethods, 해석하면 UserId가 나오는 토큰)
   const token = user.getSignedJwtToken()
 
   const options = { 
-    expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRE * 24 * 60 * 60 * 100),
+    expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRE * 24 * 60 * 60 * 1000),
     httpOnly: true
   }
 
@@ -75,15 +89,3 @@ const sendTokenResponse = (user, statusCode, res) =>{
     })
 }
 
-// @desc   get current logged in user
-// @route  Post /api/vi/auth/me
-// @acess  private
-exports.getMe = asyncHandler(async(req, res, next)=>{
-  const user = await User.findById(req.user.id)
-
-  res.status(200).json({
-    success:true,
-    data: user
-  })
-
-})
