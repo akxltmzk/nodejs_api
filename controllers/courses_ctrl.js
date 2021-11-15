@@ -58,12 +58,19 @@ exports.addCourse = asyncHandler(async(req, res, next)=>{
   params :bootcampId 이부분을 가르키는것
   */
   req.body.bootcamp = req.params.bootcampId
+  req.body.user = req.user.id
 
-  const bootCamp = await BootCamp.findById(req.params.bootcampId)
-  
-  if(!bootCamp)
+  let bootcamp = await BootCamp.findById(req.params.bootcampId)
+
+  if(!bootcamp){
     return next(new ErrorResponse(`No courses with the id of ${req.params.bootcampId}`) , 400)
-  
+  }
+
+  // make sure user is bootcamp owener
+  if(bootcamp.user.toString() !== req.user.id && req.user.role !== 'admin'){
+    return next(new ErrorResponse(`User ${req.user.id} is not authorized to add a course to bootcamp ${bootcamp.id}`,401))
+  }
+
   const course = await Course.create(req.body)
   
   res.status(200).json({
@@ -88,9 +95,14 @@ exports.updateCourse = asyncHandler(async(req, res, next)=>{
   */
   let course = await Course.findById(req.params.id)
   
-  if(!course)
+  if(!course){
     return next(new ErrorResponse(`No courses with the id of ${req.params.id}`) , 404)
-  
+  }
+
+  // make sure user is bootcamp owener
+  if(course.user.toString() !== req.user.id && req.user.role !== 'admin'){
+    return next(new ErrorResponse(`User ${req.user.id} is not authorized to update ${course._id}`,401))
+  }
 
   course = await Course.findByIdAndUpdate(req.params.id, req.body,{
     new : true,
@@ -114,6 +126,12 @@ exports.deleteCourse = asyncHandler(async(req, res, next)=>{
   if(!course)
     return next(new ErrorResponse(`No courses with the id of ${req.params.id}`) , 404)
   
+  // make sure user is bootcamp owener
+  if(course.user.toString() !== req.user.id && req.user.role !== 'admin'){
+    return next(new ErrorResponse(`User ${req.user.id} is not authorized to delete ${course._id}`,401))
+  }
+
+
   // delete 할때 findByIdAndDelete를 안하는 이유는, 미들웨어로 처리할것이기 때문이다.
   // course를 하나 지우면 bootcamp의 averagecost가 달라지기 때문에 이것을 Course_model.js
   // 에서 미들웨어로 처리한다

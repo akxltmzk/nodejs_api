@@ -121,8 +121,13 @@ const BootCampSchema = new mongoose.Schema({
   createAt:{
     type: Date,
     default: Date.now
+  },
+  user: {
+    type: mongoose.Schema.ObjectId,
+    ref: 'User',
+    required: true
   }
-  }, {
+}, {
   // Course에 있는 항목을 reverse-populate하기 위해 
   toJSON : { virtuals : true},
   toObject : { virtuals : true }

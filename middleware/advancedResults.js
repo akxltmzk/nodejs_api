@@ -32,9 +32,9 @@ const advancedResults = (model , populate) => async (req, res, next) => {
   그리고 밑에서 replace를 하는건 어떤 값 이상, 이하, 미만, 뭐 이런거 찾을때만 정규식이 작동되고
   위와 같이 name을 찾는 것과 같은 경우는 밑에 두개의 콘솔이 같음.
   */
-  console.log(queryStr) // {"averageCost":{"lte":"10000"}}
+  // console.log(queryStr)  {"averageCost":{"lte":"10000"}}
   queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g , match =>`$${match}`) 
-  console.log(queryStr) // {"averageCost":{"$lte":"10000"}}
+  // console.log(queryStr)  {"averageCost":{"$lte":"10000"}}
   // finding resources
 
   query = model.find(JSON.parse(queryStr))
