@@ -16,7 +16,7 @@ const errorHandler = (err,req,res,next) =>{
 
   // find에서 쓰이는 ObjectID의 포멧이 잘못됫을때 생긱는 에러
   if(err.name === 'CastError'){
-    const message = `not found with id of ${err.value}! ObjectID 형식을 수정하시오 !`
+    const message = `Resource not found with id of ${err.value}! ObjectID 형식을 수정하시오 !`
     error = new ErrorResponse(message,404)
   }
 

@@ -10,50 +10,48 @@ const slugify = require('slugify')
 const geocoder = require('../utils/geocoder')
 
 const BootCampSchema = new mongoose.Schema({
-  name : {
+  name: {
     type: String,
-    required:[true,'Please add name'],
+    required: [true, 'Please add name'],
     unique: true,
     // "     hello" -> "hello"로 저장됨
     trim: true,
-    maxlength:[50,'Name can not be more than 50 characters']
+    maxlength: [50, 'Name can not be more than 50 characters']
   },
 
   slug: String,
 
-  description:{
+  description: {
     type: String,
     required: [true, 'Please add description'],
-    maxlength:[500,'Description can not be more than 500 characters']
+    maxlength: [500, 'Description can not be more than 500 characters']
   },
 
-  website:{
+  website: {
     type: String,
     match: [
-      /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/
-      ,'Please use valid URL with HTTP or HTTPs'
+      /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/, 'Please use valid URL with HTTP or HTTPs'
     ]
   },
 
-  phone:{
+  phone: {
     type: String,
-    maxlength:[20,'Phone number can not be more than 20 characters']
+    maxlength: [20, 'Phone number can not be more than 20 characters']
   },
 
-  email:{
+  email: {
     type: String,
     match: [
-      /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-      ,'Please add valid email'
+      /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/, 'Please add valid email'
     ]
   },
 
-  address:{
+  address: {
     type: String,
-    required: [true, 'Please add an address' ]
+    required: [true, 'Please add an address']
   },
 
-  location:{
+  location: {
     // geojson Point
     type: {
       type: String, // Don't do `{ location: { type: String } }`
@@ -72,10 +70,10 @@ const BootCampSchema = new mongoose.Schema({
     country: String
   },
 
-  careers:{
-    type:[String],
-    required:true,
-    enum:[
+  careers: {
+    type: [String],
+    required: true,
+    enum: [
       'Web Development',
       'Mobile Development',
       'UI/UX',
@@ -85,40 +83,40 @@ const BootCampSchema = new mongoose.Schema({
     ]
   },
 
-  averageRating:{
+  averageRating: {
     type: Number,
-    min: [1,'Rating must be at least 1'],
+    min: [1, 'Rating must be at least 1'],
     max: [10, 'Rating must can not be more than 10']
   },
 
   averageCost: Number,
 
-  photo:{
+  photo: {
     type: String,
-    default:'no-photo.jpg'
+    default: 'no-photo.jpg'
   },
 
-  housing:{
+  housing: {
     type: Boolean,
     default: false
   },
 
-  jobAssistance:{
+  jobAssistance: {
     type: Boolean,
     default: false
   },
 
-  jobGuarantee:{
+  jobGuarantee: {
     type: Boolean,
     default: false
   },
 
-  acceptGi:{
+  acceptGi: {
     type: Boolean,
     default: false
   },
 
-  createAt:{
+  createAt: {
     type: Date,
     default: Date.now
   },
@@ -129,8 +127,12 @@ const BootCampSchema = new mongoose.Schema({
   }
 }, {
   // Course에 있는 항목을 reverse-populate하기 위해 
-  toJSON : { virtuals : true},
-  toObject : { virtuals : true }
+  toJSON: {
+    virtuals: true
+  },
+  toObject: {
+    virtuals: true
+  }
 })
 
 /* ========================= middleware =========================== */
@@ -144,15 +146,16 @@ const BootCampSchema = new mongoose.Schema({
 */
 
 // Create bootcamp slug from the name
-BootCampSchema.pre('save',function(){
+BootCampSchema.pre('save', async function (next) {
   // create되는 db의 name을 !소문자로해서! slug를 채운뒤 db를 create한다.
-  this.slug = slugify(this.name, {lower:true})
+  this.slug = slugify(this.name, { lower: true})
+
   next()
 })
 
 // geocode & create location field
 // geomapp 미들웨어. 자동으로 create 할때 location 부분을 채워준다.
-BootCampSchema.pre('save',async function(next){
+BootCampSchema.pre('save', async function (next) {
   const loc = await geocoder.geocode(this.address)
   // 스키마의 빈부분인 location 채우기!
   this.location = {
@@ -176,19 +179,21 @@ BootCampSchema.pre('save',async function(next){
 // 미들웨어(bootcamp_ctrl의 deleteBootcamp시 자동 실행된다.)
 // 특정 아이디의 bootcamp를 삭제하면 그 아이디와 관련된 Courese도 자동으로
 // 삭제된다.
-BootCampSchema.pre('remove',async function(next){
+BootCampSchema.pre('remove', async function (next) {
   console.log(`Courses being removed from bootcamp ${this._id}`);
   // deletemany는 매칭되는 모든 다큐먼트를 삭제
-  await this.model('Course').deleteMany({bootcamp: this._id})
+  await this.model('Course').deleteMany({
+    bootcamp: this._id
+  })
   next()
 })
 
 // reverse populate with virtuals
 BootCampSchema.virtual('courses', {
-  ref : 'Course' , 
-  localField : '_id' ,
-  foreignField : 'bootcamp' ,
-  justOne : false
+  ref: 'Course',
+  localField: '_id',
+  foreignField: 'bootcamp',
+  justOne: false
 })
 
-module.exports = mongoose.model('Bootcamp',BootCampSchema)
+module.exports = mongoose.model('Bootcamp', BootCampSchema)
