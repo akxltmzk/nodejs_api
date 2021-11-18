@@ -1,25 +1,25 @@
 const mongoose = require('mongoose')
 
 const ReviewSchema = new mongoose.Schema({
-  title:{
-    type : String,
-    trim : true,
-    required : [true, 'please add a title the review'] ,
+  title: {
+    type: String,
+    trim: true,
+    required: [true, 'please add a title the review'],
     maxlength: 100
   },
-  text : {
-    type : String,
+  text: {
+    type: String,
     required: [true, 'Please add some text']
   },
-  rating : {
-    type : Number,
-    min : 1,
-    max : 10,
+  rating: {
+    type: Number,
+    min: 1,
+    max: 10,
     required: [true, 'Please add a rating between 1 and 100']
-  }, 
-  createAt : {
+  },
+  createAt: {
     type: Date,
-    default : Date.now
+    default: Date.now
   },
   bootcamp: {
     type: mongoose.Schema.ObjectId,
@@ -33,5 +33,56 @@ const ReviewSchema = new mongoose.Schema({
   }
 })
 
+// 유저당 부트캠프에 하나의 리뷰만 적을수있게 세팅
+ReviewSchema.index({
+  bootcamp: 1,
+  user: 1
+}, {
+  unique: true
+})
 
-module.exports = mongoose.model('Review',ReviewSchema)
+// Stativ method to get avg rating
+ReviewSchema.statics.getAverageRating = async function (bootcampId) {
+
+  console.log('Calculating avg cost..'.blue)
+
+  // obj -> [{_id : 5d725c84c4ded7bcb480eaa0 , averageCost: 12250}]
+  // 뭐이런식으로 객체배열을 반환해준다.
+  const obj = await this.aggregate([{
+      $match: {
+        bootcamp: bootcampId
+      }
+    },
+    {
+      $group: {
+        _id: '$bootcamp',
+        averageRating: {
+          $avg: '$rating'
+        }
+      }
+    }
+  ])
+
+  try {
+    await this.model('Bootcamp').findByIdAndUpdate(bootcampId, {
+      averageRating: obj[0].averageRating
+    })
+  } catch (err) {
+    console.error(err)
+  }
+}
+
+// call getAverageCost after save
+ReviewSchema.post('save', function () {
+  this.constructor.getAverageRating(this.bootcamp)
+})
+
+// call getAverageRating before remove
+ReviewSchema.post('remove', function () {
+  this.constructor.getAverageRating(this.bootcamp)
+})
+
+
+
+
+module.exports = mongoose.model('Review', ReviewSchema)

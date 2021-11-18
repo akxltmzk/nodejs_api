@@ -10,7 +10,10 @@ const {
 } = require('../middleware/auth_middleware')
 const {
   getReviews,
-  getReview
+  getReview,
+  addReview,
+  updateReview,
+  deleteReview
 } = require('../controllers/reviews_ctrl')
 
 router
@@ -19,9 +22,12 @@ router
     path: 'bootcamp',
     select: 'name description'
   }), getReviews)
+  .post(protect, authorize('user', 'admin'), addReview)
 
 router
   .route('/:id')
   .get(getReview)
+  .put(protect, authorize('user', 'admin'), updateReview)
+  .delete(protect, authorize('user', 'admin'), deleteReview)
 
 module.exports = router
