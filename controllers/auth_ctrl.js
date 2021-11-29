@@ -106,7 +106,6 @@ exports.updateDetails = asyncHandler(async(req, res, next)=>{
   })
 })
 
-
 // @desc   Update password
 // @route  Post /api/v1/auth/updatepassword
 // @acess  private
@@ -123,8 +122,6 @@ exports.updatePassword = asyncHandler(async(req, res, next)=>{
 
   sendTokenResponse(user, 200, res)
 })
-
-
 
 // @desc   Forgot password
 // @route  POST /api/v1/auth/forgotpassword
@@ -170,7 +167,6 @@ exports.forgotPassword = asyncHandler(async(req, res, next)=>{
   // })
 
 })
-
 
 // @desc   Reset password
 // @route  PUT /api/v1/auth/resetpassword/:resettoken
